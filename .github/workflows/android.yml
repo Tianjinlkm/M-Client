@@ -15,21 +15,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Accept Android SDK Licenses
-        run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Release APK
-        run: ./gradlew assembleRelease
+      # 直接使用云端自带的 Android SDK 编译 Debug 包
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: M-Client-APK
-          path: "**/build/outputs/apk/release/*.apk"
+          # 自动抓取所有生成的 Debug APK
+          path: "**/build/outputs/apk/debug/*.apk"
