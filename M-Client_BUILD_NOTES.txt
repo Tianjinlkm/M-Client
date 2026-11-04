@@ -1,0 +1,35 @@
+================================================================
+M-Client（基于 KernelSU Manager 二改）— 构建与说明
+================================================================
+
+【已完成的改动】
+1. 应用显示名：app_name = "M-Client"（strings.xml），清单 android:label 已引用 @string/app_name。
+2. 包名：applicationId = "com.mclient.core"（build.gradle.kts 的 defaultManagerPackageName）。
+3. 图标：用上传图片合成到深色圆角底，生成 mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ic_launcher.png，
+   并删除原自适应图标（mipmap-anydpi），避免 Android 12+ 走自适应导致显示异常。
+4. 启动页：新建 ui/SplashActivity.kt（纯黑主题 Theme.MClient.Splash），设为 LAUNCHER；
+   所有 UI 构建包在 try-catch，Handler 2000ms 超时保底，动画加载失败也必定跳进 MainActivity，绝不卡死闪退。
+5. 稳定性/隐藏：<application> 增加 android:excludeFromRecents="true"；
+   启动页改用纯黑主题而非系统 Theme.SplashScreen，关闭 Android 12+ 默认白屏，直接黑底。
+   MainActivity 不再使用 Theme.KernelSU.Starting（防止进入主界面再白闪），改用 Theme.KernelSU。
+
+【如何构建】
+方案 A（推荐，零环境）：本工程已内置 GitHub Actions 工作流 .github/workflows/android.yml。
+   把 manager/ 目录作为仓库根推到 GitHub → Actions 自动用 JDK 21 + SDK 37 + NDK 29 编译出 Debug APK。
+   需要：ubuntu-latest、actions/checkout(fetch-depth:0)、actions/setup-java@21、android-actions/setup-android。
+   产物在 Actions 运行页的 Artifacts（M-Client-APK）里下载。
+
+方案 B（本地）：需 JDK 21 + Android SDK platform-37 + build-tools 37.0.0 + NDK 29.0.14206865。
+   命令：./gradlew :app:assembleDebug   （Debug 用默认 debug 密钥，无需签名配置）
+   若打 Release：需自备签名（KEYSTORE_FILE / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD）。
+
+【重要：libksud.so】
+   已内置：官方 v3.3.1 的 lib/arm64-v8a/libksud.so 已放入 app/src/main/jniLibs/arm64-v8a/，
+   编译时会被自动打包进 APK 的 lib/arm64-v8a/，装好的 app 可直接正常工作（无需 repack）。
+   注意：目前仅提供了 arm64-v8a 版本（覆盖绝大多数现代手机）。若需支持 32 位老设备，请额外放
+   armeabi-v7a 版本到 app/src/main/jniLibs/armeabi-v7a/；模拟器需 x86_64 版本到 jniLibs/x86_64/。
+   （如需其它 abi 的 libksud.so，从同版本官方 KernelSU Manager APK 解包 lib/<abi>/libksud.so 即可。）
+
+【版本号说明】
+   版本号由 git 提交数推算（manager/build.gradle.kts）。已加固：脱离 git（非仓库）时自动回退，
+   不会因 git 命令失败而中断构建。CI 用 fetch-depth:0 拉全量历史，版本号正常。

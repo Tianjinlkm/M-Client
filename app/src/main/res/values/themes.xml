@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.KernelSU" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+
+    <style name="Theme.KernelSU.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/background_light</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/ic_splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splash</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.KernelSU</item>
+    </style>
+
+    <style name="Theme.KernelSU.WebUI" parent="Theme.KernelSU">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+
+    <!-- 自启动页：纯黑底，不使用 Theme.SplashScreen，避免 Android 12+ 系统默认白屏闪一下 -->
+    <style name="Theme.MClient.Splash" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+
+</resources>
